@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Persons from './Persons'
 import PersonForm from './PersonForm'
 import Filter from './Filter'
-import axios from 'axios'
+import personServices from './services/persons'
 
 const App = () => {
   const [ persons, setPersons ] = useState([]) 
@@ -11,9 +11,9 @@ const App = () => {
   const [searchValue, setSearchValue] = useState('')
 
   useEffect( () => {
-    axios
-    .get('http://localhost:3001/persons')
-    .then( response => { console.log(response); setPersons(response.data) })
+    personServices.getAll()
+    .then( allPersons => setPersons(allPersons))
+    .catch(error => console.log('Unable to fetch persons', error))
   },[])
 
 
@@ -27,9 +27,14 @@ const App = () => {
   
   const submitForm = event => {
     event.preventDefault()
-    persons.map(object => object.name).includes(newName)
-    ? alert(`${newName} already added to the phonebook`)  
-    : setPersons(persons.concat({name: newName, number: newNumber}))
+    if (persons.map(object => object.name).includes(newName))
+      alert(`${newName} already added to the phonebook`)  
+    else{
+      const newPerson = {name: newName, number: newNumber}
+      personServices.create(newPerson)
+      .then(savedPerson => setPersons(persons.concat(savedPerson)))
+      .catch(error => console.log('Unable to save contact ',error))
+    } 
     setNewNumber('')
     setNewName('')  
   }  
