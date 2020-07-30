@@ -27,13 +27,18 @@
     },
     {
       "name": "vesna",
-      "number": "123",
+      "number": "778899",
       "id": 6
     },
     {
       "name": "asdf",
       "number": "asdf",
       "id": 7
+    },
+    {
+      "name": "newuser",
+      "number": "11223344",
+      "id": 8
     }
   ]
 }

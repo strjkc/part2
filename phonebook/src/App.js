@@ -27,7 +27,6 @@ const App = () => {
     return
     }
 
-
   const peopleToDisplay = searchValue.length > 0
   ? persons.filter(object => object.name.toLowerCase().includes(searchValue.toLowerCase()) )
   : persons
@@ -36,16 +35,29 @@ const App = () => {
   const nameInput = event => setNewName(event.target.value)
   const numberInput = event => setNewNumber(event.target.value)
   
-  const submitForm = event => {
-    event.preventDefault()
-    if (persons.map(object => object.name).includes(newName))
-      alert(`${newName} already added to the phonebook`)  
-    else{
-      const newPerson = {name: newName, number: newNumber}
+  const updateUser = () => {
+    if(window.confirm(`${newName} already added to the phonebook, do you want to replace the existing number`))
+        {
+          const userToUpdate = persons.find(person => person.name === newName)
+          const updatedUser = {...userToUpdate, number: newNumber}
+          personServices.update(userToUpdate.id, updatedUser)
+          .then( changedUser => setPersons(persons.map(person => person.id === changedUser.id ? changedUser : person)))
+        }
+  } 
+
+  const createUser = () => {
+    const newPerson = {name: newName, number: newNumber}
       personServices.create(newPerson)
       .then(savedPerson => setPersons(persons.concat(savedPerson)))
       .catch(error => console.error('Unable to save contact ',error))
-    } 
+  }
+
+  const submitForm = event => {
+    event.preventDefault()
+    if (persons.map(object => object.name).includes(newName))
+        updateUser()
+    else
+      createUser()
     setNewNumber('')
     setNewName('')  
   }  
