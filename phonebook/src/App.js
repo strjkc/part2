@@ -3,12 +3,14 @@ import Persons from './Persons'
 import PersonForm from './PersonForm'
 import Filter from './Filter'
 import personServices from './services/persons'
+import Notification from './Notification'
 
 const App = () => {
   const [ persons, setPersons ] = useState([]) 
   const [ newName, setNewName ] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [searchValue, setSearchValue] = useState('')
+  const [notification, setNotification] = useState(null)
 
   useEffect( () => {
     personServices.getAll()
@@ -41,15 +43,21 @@ const App = () => {
           const userToUpdate = persons.find(person => person.name === newName)
           const updatedUser = {...userToUpdate, number: newNumber}
           personServices.update(userToUpdate.id, updatedUser)
-          .then( changedUser => setPersons(persons.map(person => person.id === changedUser.id ? changedUser : person)))
+          .then( changedUser => {setPersons(persons.map(person => person.id === changedUser.id ? changedUser : person)); setNotification({type: 'regular', content: `Updated ${newName}`})})
+          .catch(error => setNotification({type: 'error', content: `Information of ${newName} has already been removed from the server`}))
         }
   } 
 
   const createUser = () => {
     const newPerson = {name: newName, number: newNumber}
       personServices.create(newPerson)
-      .then(savedPerson => setPersons(persons.concat(savedPerson)))
-      .catch(error => console.error('Unable to save contact ',error))
+      .then(savedPerson => {setPersons(persons.concat(savedPerson)) })
+      .catch(error => console.error('Unable to save contact ',error) )
+      setNotification({type: 'regular', content: `${newName} added`})
+  }
+
+  const hideNotification = () => {
+    setTimeout(() => setNotification(null), 3000)
   }
 
   const submitForm = event => {
@@ -58,13 +66,14 @@ const App = () => {
         updateUser()
     else
       createUser()
+    hideNotification()
     setNewNumber('')
     setNewName('')  
   }  
-
   return (
     <div>
       <h2>Phonebook</h2>
+      {notification === null ? <></> : <Notification notification={notification} />}
       <Filter searchValue={searchValue} searchInput={searchInput} />
       <h2>Add new</h2>
       <PersonForm submitForm={submitForm} stateValues={[newName, newNumber]} inputHandlers={[nameInput, numberInput]}  />
