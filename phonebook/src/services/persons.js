@@ -12,4 +12,9 @@ const create = newObject => {
     return response.then(response => response.data)
 }
 
-export default {create, getAll}
+const remove = id => {
+    const response = axios.delete(`${baseUrl}/${id}`)
+    return response.then(response => response.data)
+}
+
+export default {create, getAll, remove}

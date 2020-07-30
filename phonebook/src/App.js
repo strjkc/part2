@@ -13,8 +13,19 @@ const App = () => {
   useEffect( () => {
     personServices.getAll()
     .then( allPersons => setPersons(allPersons))
-    .catch(error => console.log('Unable to fetch persons', error))
+    .catch(error => console.error('Unable to fetch persons', error))
   },[])
+
+  const removePerson = id => {
+    const user = persons.find(person => person.id === id)
+    if (window.confirm(`Delete user ${user.name}?`))
+    {
+      personServices.remove(id)
+      .then( () => setPersons(persons.filter(person => person.id !== id)))
+      .catch(error => console.error('Unable to remove user ', error))
+    }
+    return
+    }
 
 
   const peopleToDisplay = searchValue.length > 0
@@ -33,7 +44,7 @@ const App = () => {
       const newPerson = {name: newName, number: newNumber}
       personServices.create(newPerson)
       .then(savedPerson => setPersons(persons.concat(savedPerson)))
-      .catch(error => console.log('Unable to save contact ',error))
+      .catch(error => console.error('Unable to save contact ',error))
     } 
     setNewNumber('')
     setNewName('')  
@@ -46,7 +57,7 @@ const App = () => {
       <h2>Add new</h2>
       <PersonForm submitForm={submitForm} stateValues={[newName, newNumber]} inputHandlers={[nameInput, numberInput]}  />
       <h2>Numbers</h2>
-      <Persons peopleToDisplay={peopleToDisplay} />
+      <Persons peopleToDisplay={peopleToDisplay} removePerson={removePerson} />
     </div>
   )
 }

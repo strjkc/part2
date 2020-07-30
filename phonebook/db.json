@@ -31,19 +31,9 @@
       "id": 6
     },
     {
-      "name": "this",
-      "number": "this",
+      "name": "asdf",
+      "number": "asdf",
       "id": 7
-    },
-    {
-      "name": "one",
-      "number": "two",
-      "id": 8
-    },
-    {
-      "name": "test",
-      "number": "234",
-      "id": 9
     }
   ]
 }
